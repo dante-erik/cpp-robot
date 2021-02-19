@@ -11,6 +11,7 @@ int main() {
     steps - Refined way to control speed
     milliseconds - Heavy-handed way to control speed
     */
+   cout << "Mouse Tests:" << endl;
    constexpr bool logCursorPos = false;
    LONG width = 2560, height = 1440;
    cout << "Random..." << flush;
@@ -26,9 +27,13 @@ int main() {
     INT revolutions = 1 + rand() % 3;
     cout << radius << ", revolutions=" << revolutions << ")..." << flush;
     for(DOUBLE i = 0; i < 2 * revolutions * pi; i += 0.01) {
-        LONG x = roundl(width / 2 + radius * std::cos(i)), y = roundl(height / 2 + radius * std::sin(i));
+        LONG x = LONG(round(width / 2 + radius * std::cos(i))), y = LONG(round(height / 2 + radius * std::sin(i)));
         mouse::MoveCursor(x, y, 1<<8, mouse::MoveType::LINEAR);
         if(logCursorPos) cout << "x: " << x << "\ty: " << y << "\ti: " << i << endl;
     }
-    cout << "done";
+    cout << "done" << endl;
+    cout << "Keyboard Tests:" << endl;
+    cout << "Testing \"Done\"...";
+    keyboard::KeyType("done");
+    cout << "look at the terminal" << endl;
 }
