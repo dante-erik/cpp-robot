@@ -21,7 +21,7 @@ LONG roundl(DOUBLE value) {
 namespace mouse
 {
     // Private Members
-    namespace {
+    namespace helpers {
         UINT MouseEvent(DWORD flag) { return InputEvent(INPUT_MOUSE, flag); }
 
         BOOL MoveCursorLinear(LONG x, LONG y, DWORD steps, DWORD milliseconds) {
@@ -37,13 +37,13 @@ namespace mouse
         }
     }
 
-    UINT LeftDown() { return MouseEvent(MOUSEEVENTF_LEFTDOWN); }
+    UINT LeftDown() { return helpers::MouseEvent(MOUSEEVENTF_LEFTDOWN); }
 
-    UINT LeftUp() { return MouseEvent(MOUSEEVENTF_LEFTUP); }
+    UINT LeftUp() { return helpers::MouseEvent(MOUSEEVENTF_LEFTUP); }
 
-    UINT RightDown() { return MouseEvent(MOUSEEVENTF_RIGHTDOWN); }
+    UINT RightDown() { return helpers::MouseEvent(MOUSEEVENTF_RIGHTDOWN); }
 
-    UINT RightUp() { return MouseEvent(MOUSEEVENTF_RIGHTUP); }
+    UINT RightUp() { return helpers::MouseEvent(MOUSEEVENTF_RIGHTUP); }
 
     UINT LeftClick(DWORD milliseconds = 0)
     {
@@ -76,7 +76,7 @@ namespace mouse
             return SetCursorPos(x, y);
         }
         switch(type) {
-            case MoveType::LINEAR: return MoveCursorLinear(x, y, steps, milliseconds);
+            case MoveType::LINEAR: return helpers::MoveCursorLinear(x, y, steps, milliseconds);
             default: return false;
         }
     }
