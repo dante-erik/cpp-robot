@@ -124,7 +124,6 @@ namespace keyboard
 
     UINT KeyDown(WORD VK) {
         return helpers::KeyboardEvent(VK);
-        
     }
 
     UINT KeyUp(WORD VK) {
@@ -189,29 +188,23 @@ namespace keyboard
 
     UINT KeyType(int key, DWORD milliseconds = 0) {
         int k = (char)(key % 10) + '0';
-        UINT down = KeyDown(k);
-        if(milliseconds) { Sleep(milliseconds); }
-        down &= KeyUp(k);
+        UINT typed = KeyType((char)k, milliseconds);
         key /= 10;
         while(key > 0) {
             if(milliseconds) { Sleep(milliseconds); }
             k = (char)(key % 10) + '0';
-            down &= KeyDown(k);
-            if(milliseconds) { Sleep(milliseconds); }
-            down &= KeyUp(k);
+            typed &= KeyType((char)k, milliseconds);
             key /= 10;
         }
-        return down;
+        return typed;
     }
 
     UINT KeyType(const char* word, DWORD milliseconds = 0) {
-        UINT down = KeyDown(word[0]);
+        UINT typed = KeyType(word[0], milliseconds);
         for(UINT i = 1; word[i]; ++i) {
             if(milliseconds) { Sleep(milliseconds); }
-            down &= KeyUp(word[i-1]);
-            if(milliseconds) { Sleep(milliseconds); }
-            down &= KeyDown(word[i]);
+            typed &= KeyType(word[i], milliseconds);
         }
-        return down;
+        return typed;
     }
 }
