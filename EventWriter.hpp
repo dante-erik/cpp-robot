@@ -62,8 +62,20 @@ namespace mouse
 
     enum class MoveType
     {
-        LINEAR
+        INSTANT, LINEAR
     };
+
+    BOOL MoveCursor(LONG x, LONG y, DWORD steps, MoveType type = MoveType::INSTANT, DWORD milliseconds = 0)
+    {
+        if(steps == 0 || type == MoveType::INSTANT) {
+            return SetCursorPos(x, y);
+        }
+        switch(type) {
+            case MoveType::LINEAR: return helpers::MoveCursorLinear(x, y, steps, milliseconds);
+            case MoveType::INSTANT:
+            default: return false;
+        }
+    }
 
     UINT LeftDown() { return helpers::MouseEvent(MOUSEEVENTF_LEFTDOWN); }
 
@@ -93,15 +105,18 @@ namespace mouse
         return down & RightUp();
     }
 
-    BOOL MoveCursor(LONG x, LONG y, DWORD steps, MoveType type, DWORD milliseconds = 0)
+    UINT LeftDrag(LONG x, LONG y, DWORD steps, MoveType type, DWORD milliseconds = 0)
     {
-        if(steps == 0) {
-            return SetCursorPos(x, y);
-        }
-        switch(type) {
-            case MoveType::LINEAR: return helpers::MoveCursorLinear(x, y, steps, milliseconds);
-            default: return false;
-        }
+        UINT down = LeftDown();
+        MoveCursor(x, y, steps, type, milliseconds);
+        return down & LeftUp();
+    }
+
+    UINT RightDrag(LONG x, LONG y, DWORD steps, MoveType type, DWORD milliseconds = 0)
+    {
+        UINT down = RightDown();
+        MoveCursor(x, y, steps, type, milliseconds);
+        return down & RightUp();
     }
 }
 
