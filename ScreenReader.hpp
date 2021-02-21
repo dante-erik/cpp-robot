@@ -8,13 +8,13 @@ class ScreenReader
 {
 protected:
     const char *windowClass, *windowDesc;
-    HWND window;
-    HDC windowDC;
-    HDC captureDC;
-    HBITMAP captureBitmap;
+    HWND window = NULL;
+    HDC windowDC = NULL;
+    HDC captureDC = NULL;
+    HBITMAP captureBitmap = NULL;
     BITMAPINFO bmi;
     RECT rect;
-    RGBQUAD *pixels;
+    RGBQUAD *pixels = NULL;
 
     LONG coordToIndex(LONG x, LONG y) const;
 
@@ -74,22 +74,27 @@ void ScreenReader::setup() {
 
 void ScreenReader::destroy() {
     delete [] pixels; 
-
-    ReleaseDC(window, windowDC);
-    DeleteDC(captureDC);
-    DeleteObject(captureBitmap);
+    if(window) {
+        ReleaseDC(window, windowDC);
+        DeleteDC(captureDC);
+        DeleteObject(captureBitmap);
+    }
 }
 
 ScreenReader::ScreenReader() : windowClass(nullptr), windowDesc(nullptr) {
     window = GetDesktopWindow();
-    setup();
-    updatePixels();
+    if(window) {
+        setup();
+        updatePixels();
+    }
 }
 
 ScreenReader::ScreenReader(const char* windowClass, const char* windowDesc) : windowClass(windowClass), windowDesc(windowDesc) {
     window = FindWindow(windowClass, windowDesc);
-    setup();
-    updatePixels();
+    if(window) {
+        setup();
+        updatePixels();
+    }
 }
 
 ScreenReader::~ScreenReader() { destroy(); }

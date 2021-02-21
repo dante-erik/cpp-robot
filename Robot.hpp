@@ -7,6 +7,7 @@ class Robot : public ScreenReader
 {
     POINT translateLocation(LONG x, LONG y) const;
     POINT translateLocation(POINT p) const;
+
 public:
     Robot();
     Robot(const char *windowClass, const char *windowDesc);
@@ -69,12 +70,18 @@ POINT Robot::translateLocation(POINT p) const
 
 Robot::Robot() : ScreenReader()
 {
-    focusApplication();
+    if (getWindow())
+    {
+        focusApplication();
+    }
 }
 
 Robot::Robot(const char *windowClass, const char *windowDesc) : ScreenReader(windowClass, windowDesc)
 {
-    focusApplication();
+    if (getWindow())
+    {
+        focusApplication();
+    }
 }
 
 Robot::~Robot() = default;
@@ -108,104 +115,126 @@ BOOL Robot::setCursorPos(POINT p)
     return setCursorPos(p.x, p.y);
 }
 
-UINT Robot::leftDown(LONG x, LONG y) {
+UINT Robot::leftDown(LONG x, LONG y)
+{
     setCursorPos(x, y);
     return leftDown();
 }
 
-UINT Robot::leftDown(POINT p) {
+UINT Robot::leftDown(POINT p)
+{
     setCursorPos(p);
     return leftDown();
 }
 
-UINT Robot::leftDown() {
+UINT Robot::leftDown()
+{
     return mouse::LeftDown();
 }
 
-UINT Robot::leftUp(LONG x, LONG y) {
+UINT Robot::leftUp(LONG x, LONG y)
+{
     setCursorPos(x, y);
     return leftUp();
 }
 
-UINT Robot::leftUp(POINT p) {
+UINT Robot::leftUp(POINT p)
+{
     setCursorPos(p);
     return leftUp();
 }
 
-UINT Robot::leftUp() {
+UINT Robot::leftUp()
+{
     return mouse::LeftUp();
 }
 
-UINT Robot::rightDown(LONG x, LONG y) {
+UINT Robot::rightDown(LONG x, LONG y)
+{
     setCursorPos(x, y);
     return rightDown();
 }
 
-UINT Robot::rightDown(POINT p) {
+UINT Robot::rightDown(POINT p)
+{
     setCursorPos(p);
     return rightDown();
 }
 
-UINT Robot::rightDown() {
+UINT Robot::rightDown()
+{
     return mouse::RightDown();
 }
 
-UINT Robot::rightUp(LONG x, LONG y) {
+UINT Robot::rightUp(LONG x, LONG y)
+{
     setCursorPos(x, y);
     return rightUp();
 }
 
-UINT Robot::rightUp(POINT p) {
+UINT Robot::rightUp(POINT p)
+{
     setCursorPos(p);
     return rightUp();
 }
 
-UINT Robot::rightUp() {
+UINT Robot::rightUp()
+{
     return mouse::RightUp();
 }
 
-UINT Robot::leftClick(LONG x, LONG y, DWORD milliseconds) {
+UINT Robot::leftClick(LONG x, LONG y, DWORD milliseconds)
+{
     setCursorPos(x, y);
     return leftClick(milliseconds);
 }
 
-UINT Robot::leftClick(POINT p, DWORD milliseconds) {
+UINT Robot::leftClick(POINT p, DWORD milliseconds)
+{
     setCursorPos(p);
     return leftClick(milliseconds);
 }
 
-UINT Robot::leftClick(DWORD milliseconds) {
+UINT Robot::leftClick(DWORD milliseconds)
+{
     return mouse::LeftClick(milliseconds);
 }
 
-UINT Robot::rightClick(LONG x, LONG y, DWORD milliseconds) {
+UINT Robot::rightClick(LONG x, LONG y, DWORD milliseconds)
+{
     setCursorPos(x, y);
     return rightClick(milliseconds);
 }
 
-UINT Robot::rightClick(POINT p, DWORD milliseconds) {
+UINT Robot::rightClick(POINT p, DWORD milliseconds)
+{
     setCursorPos(p);
     return rightClick(milliseconds);
 }
 
-UINT Robot::rightClick(DWORD milliseconds) {
+UINT Robot::rightClick(DWORD milliseconds)
+{
     return mouse::RightClick(milliseconds);
 }
 
-UINT Robot::leftDrag(LONG x, LONG y, DWORD steps, mouse::MoveType type, DWORD milliseconds) {
+UINT Robot::leftDrag(LONG x, LONG y, DWORD steps, mouse::MoveType type, DWORD milliseconds)
+{
     POINT tp = translateLocation(x, y);
     return mouse::LeftDrag(tp.x, tp.y, steps, type, milliseconds);
 }
 
-UINT Robot::leftDrag(POINT p, DWORD steps, mouse::MoveType type, DWORD milliseconds) {
+UINT Robot::leftDrag(POINT p, DWORD steps, mouse::MoveType type, DWORD milliseconds)
+{
     return leftDrag(p.x, p.y, steps, type, milliseconds);
 }
 
-UINT Robot::rightDrag(LONG x, LONG y, DWORD steps, mouse::MoveType type, DWORD milliseconds) {
+UINT Robot::rightDrag(LONG x, LONG y, DWORD steps, mouse::MoveType type, DWORD milliseconds)
+{
     POINT tp = translateLocation(x, y);
     return mouse::RightDrag(tp.x, tp.y, steps, type, milliseconds);
 }
 
-UINT Robot::rightDrag(POINT p, DWORD steps, mouse::MoveType type, DWORD milliseconds) {
+UINT Robot::rightDrag(POINT p, DWORD steps, mouse::MoveType type, DWORD milliseconds)
+{
     return rightDrag(p.x, p.y, steps, type, milliseconds);
 }
