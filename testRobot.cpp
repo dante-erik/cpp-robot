@@ -53,8 +53,9 @@ int main() {
     cout << "Paint Circle...";
     mouse::PolarParams pp;
     constexpr int radius = 250;
-    pp.origin.x = paint.getWidth() / 2;
-    pp.origin.y = paint.getHeight() / 2;
+    RECT paintRect = paint.getRect();
+    pp.origin.x = paintRect.left + paint.getWidth() / 2;
+    pp.origin.y = paintRect.top + paint.getHeight() / 2;
     paint.moveCursor(radius, 0, 1 << 18, mouse::MoveType::POLAR, &pp, 0, true);
     Sleep(sleep);
     paint.leftDrag(radius, TWO_PI, 1 << 18, mouse::MoveType::POLAR, &pp, 0, true);
