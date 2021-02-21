@@ -2,7 +2,11 @@
 #pragma once
 
 // Includes
+#include <cmath>
+#include <iostream>
 #include <Windows.h>
+
+using std::cout, std::endl;
 
 // These methods are good for single input sends:
 // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
@@ -39,6 +43,18 @@ UINT InputEvent(DWORD type, WORD VK)
 
 namespace mouse
 {
+    enum class MoveType
+    {
+        INSTANT, LINEAR, POLAR
+    };
+
+    struct MoveParams {};
+
+    struct PolarParams : MoveParams
+    {
+        POINT origin;
+    };
+
     // Private Members
     namespace helpers {
         UINT MouseEvent(DWORD flag) { return InputEvent(INPUT_MOUSE, flag); }
@@ -47,7 +63,7 @@ namespace mouse
             return (LONG) value + ((LONG) value <= (LONG)(value - 0.5));
         }
 
-        BOOL MoveCursorLinear(LONG x, LONG y, DWORD steps, DWORD milliseconds) {
+        BOOL MoveCursorLinear(DOUBLE x, DOUBLE y, DWORD steps, DWORD milliseconds) {
             BOOL success = true;
             POINT cursor_pos;
             GetCursorPos(&cursor_pos);
@@ -58,20 +74,38 @@ namespace mouse
             }
             return success;
         }
+
+        BOOL MoveCursorPolar(DOUBLE r, DOUBLE t, DWORD steps, DWORD milliseconds, PolarParams const& origin) {
+            t *= -1;
+            BOOL success = true;
+            POINT cursor_pos;
+            GetCursorPos(&cursor_pos);
+            cursor_pos.x -= origin.origin.x;
+            cursor_pos.y -= origin.origin.y;
+            DOUBLE radius = std::sqrt(cursor_pos.x*cursor_pos.x+cursor_pos.y*cursor_pos.y);
+            DOUBLE theta = cursor_pos.x == 0 && cursor_pos.y == 0 ? t : std::atan2(cursor_pos.y, cursor_pos.x);
+            DOUBLE delta_r = r - radius, delta_t = t - theta;
+            for(DWORD i = 0; i < steps; ++i) {
+                if(milliseconds) { Sleep(milliseconds); }
+                success = SetCursorPos(origin.origin.x + roundl((radius + i * delta_r / steps) * std::cos(theta + i * delta_t / steps)), origin.origin.y + roundl((radius + i * delta_r / steps) * std::sin(theta + i * delta_t / steps))) && success;
+            }
+            GetCursorPos(&cursor_pos);
+            cursor_pos.x -= origin.origin.x;
+            cursor_pos.y -= origin.origin.y;
+            radius = std::sqrt(cursor_pos.x*cursor_pos.x+cursor_pos.y*cursor_pos.y);
+            theta = cursor_pos.x == 0 && cursor_pos.y == 0 ? t : std::atan2(cursor_pos.y, cursor_pos.x);
+            return success;
+        }
     }
 
-    enum class MoveType
-    {
-        INSTANT, LINEAR
-    };
-
-    BOOL MoveCursor(LONG x, LONG y, DWORD steps, MoveType type = MoveType::INSTANT, DWORD milliseconds = 0)
+    BOOL MoveCursor(DOUBLE x, DOUBLE y, DWORD steps, MoveType type = MoveType::INSTANT, const MoveParams* params = NULL, DWORD milliseconds = 0)
     {
         if(steps == 0 || type == MoveType::INSTANT) {
-            return SetCursorPos(x, y);
+            return SetCursorPos(helpers::roundl(x), helpers::roundl(y));
         }
         switch(type) {
             case MoveType::LINEAR: return helpers::MoveCursorLinear(x, y, steps, milliseconds);
+            case MoveType::POLAR: return helpers::MoveCursorPolar(x, y, steps, milliseconds, *((PolarParams*)params));
             case MoveType::INSTANT:
             default: return false;
         }
@@ -105,17 +139,17 @@ namespace mouse
         return down & RightUp();
     }
 
-    UINT LeftDrag(LONG x, LONG y, DWORD steps, MoveType type, DWORD milliseconds = 0)
+    UINT LeftDrag(DOUBLE x, DOUBLE y, DWORD steps, MoveType type, const MoveParams* params = NULL, DWORD milliseconds = 0)
     {
         UINT down = LeftDown();
-        MoveCursor(x, y, steps, type, milliseconds);
+        MoveCursor(x, y, steps, type, params, milliseconds);
         return down & LeftUp();
     }
 
-    UINT RightDrag(LONG x, LONG y, DWORD steps, MoveType type, DWORD milliseconds = 0)
+    UINT RightDrag(DOUBLE x, DOUBLE y, DWORD steps, MoveType type, const MoveParams* params = NULL, DWORD milliseconds = 0)
     {
         UINT down = RightDown();
-        MoveCursor(x, y, steps, type, milliseconds);
+        MoveCursor(x, y, steps, type, params, milliseconds);
         return down & RightUp();
     }
 }

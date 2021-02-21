@@ -5,7 +5,14 @@
 
 class Robot : public ScreenReader
 {
-    POINT translateLocation(LONG x, LONG y) const;
+    typedef struct tagPOINTD
+    {
+        DOUBLE  x;
+        DOUBLE  y;
+    } POINTD, *PPOINTD, NEAR *NPPOINTD, FAR *LPPOINTD;
+
+    POINTD translateLocation(DOUBLE x, DOUBLE y) const;
+    POINT translateLocation(LONG  x, LONG y) const;
     POINT translateLocation(POINT p) const;
 
 public:
@@ -13,33 +20,55 @@ public:
     Robot(const char *windowClass, const char *windowDesc);
     ~Robot();
     void focusApplication();
-    BOOL moveCursor(LONG x, LONG y, DWORD steps, mouse::MoveType type, DWORD milliseconds = 0);
-    BOOL moveCursor(POINT p, DWORD steps, mouse::MoveType type, DWORD milliseconds = 0);
-    BOOL setCursorPos(LONG x, LONG y);
-    BOOL setCursorPos(POINT p);
-    UINT leftDown(LONG x, LONG y);
-    UINT leftDown(POINT p);
+    BOOL moveCursor(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
+    BOOL moveCursor(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
+    BOOL setCursorPos(LONG x, LONG y, bool absolute = false);
+    BOOL setCursorPos(POINT p, bool absolute = false);
+    UINT leftDown(LONG x, LONG y, bool absolute = false);
+    UINT leftDown(POINT p, bool absolute = false);
     UINT leftDown();
-    UINT leftUp(LONG x, LONG y);
-    UINT leftUp(POINT p);
+    UINT leftUp(LONG x, LONG y, bool absolute = false);
+    UINT leftUp(POINT p, bool absolute = false);
     UINT leftUp();
-    UINT rightDown(LONG x, LONG y);
-    UINT rightDown(POINT p);
+    UINT rightDown(LONG x, LONG y, bool absolute = false);
+    UINT rightDown(POINT p, bool absolute = false);
     UINT rightDown();
-    UINT rightUp(LONG x, LONG y);
-    UINT rightUp(POINT p);
+    UINT rightUp(LONG x, LONG y, bool absolute = false);
+    UINT rightUp(POINT p, bool absolute = false);
     UINT rightUp();
-    UINT leftClick(LONG x, LONG y, DWORD milliseconds = 0);
-    UINT leftClick(POINT p, DWORD milliseconds = 0);
+    UINT leftClick(LONG x, LONG y, DWORD milliseconds = 0, bool absolute = false);
+    UINT leftClick(POINT p, DWORD milliseconds = 0, bool absolute = false);
     UINT leftClick(DWORD milliseconds = 0);
-    UINT rightClick(LONG x, LONG y, DWORD milliseconds = 0);
-    UINT rightClick(POINT p, DWORD milliseconds = 0);
+    UINT rightClick(LONG x, LONG y, DWORD milliseconds = 0, bool absolute = false);
+    UINT rightClick(POINT p, DWORD milliseconds = 0, bool absolute = false);
     UINT rightClick(DWORD milliseconds = 0);
-    UINT leftDrag(LONG x, LONG y, DWORD steps, mouse::MoveType type, DWORD milliseconds = 0);
-    UINT leftDrag(POINT p, DWORD steps, mouse::MoveType type, DWORD milliseconds = 0);
-    UINT rightDrag(LONG x, LONG y, DWORD steps, mouse::MoveType type, DWORD milliseconds = 0);
-    UINT rightDrag(POINT p, DWORD steps, mouse::MoveType type, DWORD milliseconds = 0);
+    UINT leftDrag(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
+    UINT leftDrag(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
+    UINT rightDrag(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
+    UINT rightDrag(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
 };
+
+Robot::POINTD Robot::translateLocation(DOUBLE x, DOUBLE y) const
+{
+    POINTD pos;
+    if (x < 0)
+    {
+        pos.x = rect.right + x;
+    }
+    else
+    {
+        pos.x = rect.left + x;
+    }
+    if (y < 0)
+    {
+        pos.y = rect.bottom + y;
+    }
+    else
+    {
+        pos.y = rect.top + y;
+    }
+    return pos;
+}
 
 POINT Robot::translateLocation(LONG x, LONG y) const
 {
@@ -93,37 +122,49 @@ void Robot::focusApplication()
     SetFocus(window);
 }
 
-BOOL Robot::moveCursor(LONG x, LONG y, DWORD steps, mouse::MoveType type, DWORD milliseconds)
+BOOL Robot::moveCursor(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
 {
-    POINT tp = translateLocation(x, y);
-    return mouse::MoveCursor(tp.x, tp.y, steps, type, milliseconds);
+    POINTD tp;
+    if(absolute){
+        tp.x = x;
+        tp.y = y;
+    } else {
+        tp = translateLocation(x, y);
+    }
+    return mouse::MoveCursor(tp.x, tp.y, steps, type, params, milliseconds);
 }
 
-BOOL Robot::moveCursor(POINT p, DWORD steps, mouse::MoveType type, DWORD milliseconds)
+BOOL Robot::moveCursor(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
 {
-    return moveCursor(p.x, p.y, steps, type, milliseconds);
+    return moveCursor(p.x, p.y, steps, type, params, milliseconds, absolute);
 }
 
-BOOL Robot::setCursorPos(LONG x, LONG y)
+BOOL Robot::setCursorPos(LONG x, LONG y, bool absolute)
 {
-    POINT tp = translateLocation(x, y);
+    POINT tp;
+    if(absolute){
+        tp.x = x;
+        tp.y = y;
+    } else {
+        tp = translateLocation(x, y);
+    }
     return mouse::MoveCursor(tp.x, tp.y, 0);
 }
 
-BOOL Robot::setCursorPos(POINT p)
+BOOL Robot::setCursorPos(POINT p, bool absolute)
 {
-    return setCursorPos(p.x, p.y);
+    return setCursorPos(p.x, p.y, absolute);
 }
 
-UINT Robot::leftDown(LONG x, LONG y)
+UINT Robot::leftDown(LONG x, LONG y, bool absolute)
 {
-    setCursorPos(x, y);
+    setCursorPos(x, y, absolute);
     return leftDown();
 }
 
-UINT Robot::leftDown(POINT p)
+UINT Robot::leftDown(POINT p, bool absolute)
 {
-    setCursorPos(p);
+    setCursorPos(p, absolute);
     return leftDown();
 }
 
@@ -132,15 +173,15 @@ UINT Robot::leftDown()
     return mouse::LeftDown();
 }
 
-UINT Robot::leftUp(LONG x, LONG y)
+UINT Robot::leftUp(LONG x, LONG y, bool absolute)
 {
-    setCursorPos(x, y);
+    setCursorPos(x, y, absolute);
     return leftUp();
 }
 
-UINT Robot::leftUp(POINT p)
+UINT Robot::leftUp(POINT p, bool absolute)
 {
-    setCursorPos(p);
+    setCursorPos(p, absolute);
     return leftUp();
 }
 
@@ -149,15 +190,15 @@ UINT Robot::leftUp()
     return mouse::LeftUp();
 }
 
-UINT Robot::rightDown(LONG x, LONG y)
+UINT Robot::rightDown(LONG x, LONG y, bool absolute)
 {
-    setCursorPos(x, y);
+    setCursorPos(x, y, absolute);
     return rightDown();
 }
 
-UINT Robot::rightDown(POINT p)
+UINT Robot::rightDown(POINT p, bool absolute)
 {
-    setCursorPos(p);
+    setCursorPos(p, absolute);
     return rightDown();
 }
 
@@ -166,15 +207,15 @@ UINT Robot::rightDown()
     return mouse::RightDown();
 }
 
-UINT Robot::rightUp(LONG x, LONG y)
+UINT Robot::rightUp(LONG x, LONG y, bool absolute)
 {
-    setCursorPos(x, y);
+    setCursorPos(x, y, absolute);
     return rightUp();
 }
 
-UINT Robot::rightUp(POINT p)
+UINT Robot::rightUp(POINT p, bool absolute)
 {
-    setCursorPos(p);
+    setCursorPos(p, absolute);
     return rightUp();
 }
 
@@ -183,16 +224,16 @@ UINT Robot::rightUp()
     return mouse::RightUp();
 }
 
-UINT Robot::leftClick(LONG x, LONG y, DWORD milliseconds)
+UINT Robot::leftClick(LONG x, LONG y, DWORD milliseconds, bool absolute)
 {
-    setCursorPos(x, y);
+    setCursorPos(x, y, absolute);
     return leftClick(milliseconds);
 }
 
-UINT Robot::leftClick(POINT p, DWORD milliseconds)
+UINT Robot::leftClick(POINT p, DWORD milliseconds, bool absolute)
 {
-    setCursorPos(p);
-    return leftClick(milliseconds);
+    setCursorPos(p, absolute);
+    return leftClick(milliseconds, absolute);
 }
 
 UINT Robot::leftClick(DWORD milliseconds)
@@ -200,15 +241,15 @@ UINT Robot::leftClick(DWORD milliseconds)
     return mouse::LeftClick(milliseconds);
 }
 
-UINT Robot::rightClick(LONG x, LONG y, DWORD milliseconds)
+UINT Robot::rightClick(LONG x, LONG y, DWORD milliseconds, bool absolute)
 {
-    setCursorPos(x, y);
+    setCursorPos(x, y, absolute);
     return rightClick(milliseconds);
 }
 
-UINT Robot::rightClick(POINT p, DWORD milliseconds)
+UINT Robot::rightClick(POINT p, DWORD milliseconds, bool absolute)
 {
-    setCursorPos(p);
+    setCursorPos(p, absolute);
     return rightClick(milliseconds);
 }
 
@@ -217,24 +258,36 @@ UINT Robot::rightClick(DWORD milliseconds)
     return mouse::RightClick(milliseconds);
 }
 
-UINT Robot::leftDrag(LONG x, LONG y, DWORD steps, mouse::MoveType type, DWORD milliseconds)
+UINT Robot::leftDrag(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
 {
-    POINT tp = translateLocation(x, y);
-    return mouse::LeftDrag(tp.x, tp.y, steps, type, milliseconds);
+    POINTD tp;
+    if(absolute){
+        tp.x = x;
+        tp.y = y;
+    } else {
+        tp = translateLocation(x, y);
+    }
+    return mouse::LeftDrag(tp.x, tp.y, steps, type, params, milliseconds);
 }
 
-UINT Robot::leftDrag(POINT p, DWORD steps, mouse::MoveType type, DWORD milliseconds)
+UINT Robot::leftDrag(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
 {
-    return leftDrag(p.x, p.y, steps, type, milliseconds);
+    return leftDrag(p.x, p.y, steps, type, params, milliseconds, absolute);
 }
 
-UINT Robot::rightDrag(LONG x, LONG y, DWORD steps, mouse::MoveType type, DWORD milliseconds)
+UINT Robot::rightDrag(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
 {
-    POINT tp = translateLocation(x, y);
-    return mouse::RightDrag(tp.x, tp.y, steps, type, milliseconds);
+    POINTD tp;
+    if(absolute){
+        tp.x = x;
+        tp.y = y;
+    } else {
+        tp = translateLocation(x, y);
+    }
+    return mouse::RightDrag(tp.x, tp.y, steps, type, params, milliseconds);
 }
 
-UINT Robot::rightDrag(POINT p, DWORD steps, mouse::MoveType type, DWORD milliseconds)
+UINT Robot::rightDrag(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
 {
-    return rightDrag(p.x, p.y, steps, type, milliseconds);
+    return rightDrag(p.x, p.y, steps, type, params, milliseconds, absolute);
 }
