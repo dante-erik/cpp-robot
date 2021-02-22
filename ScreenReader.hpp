@@ -2,6 +2,7 @@
 #pragma once
 
 // Includes
+#include "Color.hpp"
 #include <Windows.h>
 
 class ScreenReader
@@ -26,11 +27,12 @@ public:
     ScreenReader(const char *windowClass, const char *windowDesc); // Specific Window
     ~ScreenReader();
     int updatePixels();
+
     // Useful Getters
-    [[nodiscard]] RGBQUAD getPixel(LONG x, LONG y) const;
-    [[nodiscard]] BYTE getRed(LONG x, LONG y) const;
-    [[nodiscard]] BYTE getGreen(LONG x, LONG y) const;
-    [[nodiscard]] BYTE getBlue(LONG x, LONG y) const;
+    [[nodiscard]] virtual RGBQUAD getPixel(LONG x, LONG y) const;
+    [[nodiscard]] virtual BYTE getRed(LONG x, LONG y) const;
+    [[nodiscard]] virtual BYTE getGreen(LONG x, LONG y) const;
+    [[nodiscard]] virtual BYTE getBlue(LONG x, LONG y) const;
     [[nodiscard]] LONG getNumPixels() const;
     [[nodiscard]] LONG getWidth() const;
     [[nodiscard]] LONG getHeight() const;
@@ -45,6 +47,11 @@ public:
     [[nodiscard]] BITMAPINFO const &getBitmapInfo() const;
     [[nodiscard]] RECT const &getRect() const;
     [[nodiscard]] RGBQUAD *const &getPixels() const;
+
+    [[nodiscard]] virtual DOUBLE getPixelDiff(LONG x, LONG y, RGBQUAD color) const;
+    [[nodiscard]] virtual BOOL getPixelDiff(LONG x, LONG y, RGBQUAD color, DOUBLE tolerance) const;
+    [[nodiscard]] virtual UINT getPixelsDiff(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance) const;
+    [[nodiscard]] virtual DOUBLE getPixelsDiffPercent(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance) const;
 };
 
 LONG ScreenReader::coordToIndex(LONG x, LONG y) const {
@@ -173,4 +180,33 @@ RECT const& ScreenReader::getRect() const {
 
 RGBQUAD* const& ScreenReader::getPixels() const {
     return pixels;
+}
+
+DOUBLE ScreenReader::getPixelDiff(LONG x, LONG y, RGBQUAD color) const {
+    return color::diff(getPixel(x, y), color);
+}
+
+BOOL ScreenReader::getPixelDiff(LONG x, LONG y, RGBQUAD color, DOUBLE tolerance) const {
+    return color::diffLE(getPixel(x, y), color, tolerance);
+}
+
+UINT ScreenReader::getPixelsDiff(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance) const {
+    const LONG w = getWidth(), h = getHeight();
+    UINT count = 0;
+    for(LONG i = (x < 0 ? 0 : x); i < x + width && i < w; ++i) {
+        for(LONG j = (y < 0 ? 0 : y); j < y + height && j < h; ++j) {
+            count += getPixelDiff(i, j, color, tolerance);
+        }
+    }
+    return count;
+}
+
+DOUBLE ScreenReader::getPixelsDiffPercent(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance) const {
+    const LONG w = getWidth(), h = getHeight();
+    LONG trueX = 0 < x ? x : 0;
+    LONG trueY = 0 < y ? x : 0;
+    LONG trueW = trueX + width <= w ? width : w - trueX;
+    LONG trueH = trueY + height <= h ? height : h - trueY;
+    DOUBLE area = trueW * trueH;
+    return getPixelsDiff(x, y, width, height, color, tolerance) / area;
 }
