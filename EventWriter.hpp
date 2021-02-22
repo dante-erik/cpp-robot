@@ -189,27 +189,27 @@ namespace keyboard
         return KeyUp((WORD)key);
     }
 
-    UINT KeyDown(int key, DWORD milliseconds = 0) {
-        UINT down = KeyDown((char)(key % 10 + '0'));
-        key /= 10;
-        while(key > 0) {
-            if(milliseconds) { Sleep(milliseconds); }
-            down &= KeyDown((char)(key % 10 + '0'));
-            key /= 10;
-        }
-        return down;
-    }
+    // UINT KeyDown(int key, DWORD milliseconds = 0) {
+    //     UINT down = KeyDown((char)(key % 10 + '0'));
+    //     key /= 10;
+    //     while(key > 0) {
+    //         if(milliseconds) { Sleep(milliseconds); }
+    //         down &= KeyDown((char)(key % 10 + '0'));
+    //         key /= 10;
+    //     }
+    //     return down;
+    // }
 
-    UINT KeyUp(int key, DWORD milliseconds = 0) {
-        UINT up = KeyUp((char)(key % 10 + '0'));
-        key /= 10;
-        while(key > 0) {
-            if(milliseconds) { Sleep(milliseconds); }
-            up &= KeyUp((char)(key % 10 + '0'));
-            key /= 10;
-        }
-        return up;
-    }
+    // UINT KeyUp(int key, DWORD milliseconds = 0) {
+    //     UINT up = KeyUp((char)(key % 10 + '0'));
+    //     key /= 10;
+    //     while(key > 0) {
+    //         if(milliseconds) { Sleep(milliseconds); }
+    //         up &= KeyUp((char)(key % 10 + '0'));
+    //         key /= 10;
+    //     }
+    //     return up;
+    // }
 
     UINT KeyDown(const char* keys, DWORD milliseconds = 0) {
         UINT down = KeyDown(keys[0]);
@@ -235,18 +235,18 @@ namespace keyboard
         return down & KeyUp(key);
     }
 
-    UINT KeyType(int key, DWORD milliseconds = 0) {
-        int k = (char)(key % 10) + '0';
-        UINT typed = KeyType((char)k, milliseconds);
-        key /= 10;
-        while(key > 0) {
-            if(milliseconds) { Sleep(milliseconds); }
-            k = (char)(key % 10) + '0';
-            typed &= KeyType((char)k, milliseconds);
-            key /= 10;
-        }
-        return typed;
-    }
+    // UINT KeyType(int key, DWORD milliseconds = 0) {
+    //     int k = (char)(key % 10) + '0';
+    //     UINT typed = KeyType((char)k, milliseconds);
+    //     key /= 10;
+    //     while(key > 0) {
+    //         if(milliseconds) { Sleep(milliseconds); }
+    //         k = (char)(key % 10) + '0';
+    //         typed &= KeyType((char)k, milliseconds);
+    //         key /= 10;
+    //     }
+    //     return typed;
+    // }
 
     UINT KeyType(const char* word, DWORD milliseconds = 0) {
         UINT typed = KeyType(word[0], milliseconds);
