@@ -3,10 +3,7 @@
 
 // Includes
 #include <cmath>
-#include <iostream>
 #include <Windows.h>
-
-using std::cout, std::endl;
 
 // These methods are good for single input sends:
 // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
