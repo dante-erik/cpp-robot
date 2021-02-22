@@ -5,6 +5,7 @@
 
 namespace color
 {
+    // Colors From: https://www.computerhope.com/htmcolor.htm
     namespace colors
     {
         constexpr RGBQUAD BLACK{0x00, 0x00, 0x00, 0};
