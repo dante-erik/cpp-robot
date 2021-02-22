@@ -4,6 +4,8 @@
 using std::cout, std::endl;
 
 int main() {
+    cout << "Black-Black Diff: " << color::diff(color::colors::BLACK, color::colors::BLACK) << endl;
+    cout << "Black-Night Diff: " << color::diff(color::colors::BLACK, color::colors::NIGHT) << endl;
     cout << "Black-Gray Diff: " << color::diff(color::colors::BLACK, color::colors::GRAY) << endl;
     cout << "Black-White Diff: " << color::diff(color::colors::BLACK, color::colors::WHITE) << endl;
     cout << "Gray-White Diff: " << color::diff(color::colors::GRAY, color::colors::WHITE) << endl;
