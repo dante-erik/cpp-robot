@@ -22,31 +22,31 @@ public:
     void focusApplication();
     // Writer
     BOOL moveCursor(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
-    // BOOL moveCursor(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
+    BOOL moveCursor(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
     BOOL setCursorPos(LONG x, LONG y, bool absolute = false);
-    // BOOL setCursorPos(POINT p, bool absolute = false);
+    BOOL setCursorPos(POINT p, bool absolute = false);
     UINT leftDown(LONG x, LONG y, bool absolute = false);
-    // UINT leftDown(POINT p, bool absolute = false);
+    UINT leftDown(POINT p, bool absolute = false);
     UINT leftDown();
     UINT leftUp(LONG x, LONG y, bool absolute = false);
-    // UINT leftUp(POINT p, bool absolute = false);
+    UINT leftUp(POINT p, bool absolute = false);
     UINT leftUp();
     UINT rightDown(LONG x, LONG y, bool absolute = false);
-    // UINT rightDown(POINT p, bool absolute = false);
+    UINT rightDown(POINT p, bool absolute = false);
     UINT rightDown();
     UINT rightUp(LONG x, LONG y, bool absolute = false);
-    // UINT rightUp(POINT p, bool absolute = false);
+    UINT rightUp(POINT p, bool absolute = false);
     UINT rightUp();
     UINT leftClick(LONG x, LONG y, DWORD milliseconds = 0, bool absolute = false);
-    // UINT leftClick(POINT p, DWORD milliseconds = 0, bool absolute = false);
+    UINT leftClick(POINT p, DWORD milliseconds = 0, bool absolute = false);
     UINT leftClick(DWORD milliseconds = 0);
     UINT rightClick(LONG x, LONG y, DWORD milliseconds = 0, bool absolute = false);
-    // UINT rightClick(POINT p, DWORD milliseconds = 0, bool absolute = false);
+    UINT rightClick(POINT p, DWORD milliseconds = 0, bool absolute = false);
     UINT rightClick(DWORD milliseconds = 0);
     UINT leftDrag(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
-    // UINT leftDrag(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
+    UINT leftDrag(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
     UINT rightDrag(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
-    // UINT rightDrag(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
+    UINT rightDrag(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params = NULL, DWORD milliseconds = 0, bool absolute = false);
 
     // Reader
     [[nodiscard]] RGBQUAD getPixel(LONG x, LONG y, BOOL absolute = false) const;
@@ -59,7 +59,7 @@ public:
     [[nodiscard]] DOUBLE getPixelsDiffPercent(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance, BOOL absolute = false) const;
 };
 
-Robot::POINTD Robot::translateLocation(DOUBLE x, DOUBLE y) const
+inline Robot::POINTD Robot::translateLocation(DOUBLE x, DOUBLE y) const
 {
     POINTD pos;
     if (x < 0)
@@ -81,7 +81,7 @@ Robot::POINTD Robot::translateLocation(DOUBLE x, DOUBLE y) const
     return pos;
 }
 
-POINT Robot::translateLocation(LONG x, LONG y) const
+inline POINT Robot::translateLocation(LONG x, LONG y) const
 {
     POINT pos;
     if (x < 0)
@@ -103,12 +103,12 @@ POINT Robot::translateLocation(LONG x, LONG y) const
     return pos;
 }
 
-POINT Robot::translateLocation(POINT p) const
+inline POINT Robot::translateLocation(POINT p) const
 {
     return translateLocation(p.x, p.y);
 }
 
-Robot::Robot() : ScreenReader()
+inline Robot::Robot() : ScreenReader()
 {
     if (getWindow())
     {
@@ -116,7 +116,7 @@ Robot::Robot() : ScreenReader()
     }
 }
 
-Robot::Robot(const char *windowClass, const char *windowDesc) : ScreenReader(windowClass, windowDesc)
+inline Robot::Robot(const char *windowClass, const char *windowDesc) : ScreenReader(windowClass, windowDesc)
 {
     if (getWindow())
     {
@@ -124,16 +124,16 @@ Robot::Robot(const char *windowClass, const char *windowDesc) : ScreenReader(win
     }
 }
 
-Robot::~Robot() = default;
+inline Robot::~Robot() = default;
 
-void Robot::focusApplication()
+inline void Robot::focusApplication()
 {
     SetForegroundWindow(window);
     SetActiveWindow(window);
     SetFocus(window);
 }
 
-BOOL Robot::moveCursor(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
+inline BOOL Robot::moveCursor(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
 {
     POINTD tp;
     if(absolute){
@@ -145,12 +145,12 @@ BOOL Robot::moveCursor(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, co
     return mouse::MoveCursor(tp.x, tp.y, steps, type, params, milliseconds);
 }
 
-// BOOL Robot::moveCursor(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
-// {
-//     return moveCursor(p.x, p.y, steps, type, params, milliseconds, absolute);
-// }
+inline BOOL Robot::moveCursor(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
+{
+    return moveCursor(p.x, p.y, steps, type, params, milliseconds, absolute);
+}
 
-BOOL Robot::setCursorPos(LONG x, LONG y, bool absolute)
+inline BOOL Robot::setCursorPos(LONG x, LONG y, bool absolute)
 {
     POINT tp;
     if(absolute){
@@ -162,114 +162,114 @@ BOOL Robot::setCursorPos(LONG x, LONG y, bool absolute)
     return mouse::MoveCursor(tp.x, tp.y, 0);
 }
 
-// BOOL Robot::setCursorPos(POINT p, bool absolute)
-// {
-//     return setCursorPos(p.x, p.y, absolute);
-// }
+inline BOOL Robot::setCursorPos(POINT p, bool absolute)
+{
+    return setCursorPos(p.x, p.y, absolute);
+}
 
-UINT Robot::leftDown(LONG x, LONG y, bool absolute)
+inline UINT Robot::leftDown(LONG x, LONG y, bool absolute)
 {
     setCursorPos(x, y, absolute);
     return leftDown();
 }
 
-// UINT Robot::leftDown(POINT p, bool absolute)
-// {
-//     setCursorPos(p, absolute);
-//     return leftDown();
-// }
+inline UINT Robot::leftDown(POINT p, bool absolute)
+{
+    setCursorPos(p, absolute);
+    return leftDown();
+}
 
-UINT Robot::leftDown()
+inline UINT Robot::leftDown()
 {
     return mouse::LeftDown();
 }
 
-UINT Robot::leftUp(LONG x, LONG y, bool absolute)
+inline UINT Robot::leftUp(LONG x, LONG y, bool absolute)
 {
     setCursorPos(x, y, absolute);
     return leftUp();
 }
 
-// UINT Robot::leftUp(POINT p, bool absolute)
-// {
-//     setCursorPos(p, absolute);
-//     return leftUp();
-// }
+inline UINT Robot::leftUp(POINT p, bool absolute)
+{
+    setCursorPos(p, absolute);
+    return leftUp();
+}
 
-UINT Robot::leftUp()
+inline UINT Robot::leftUp()
 {
     return mouse::LeftUp();
 }
 
-UINT Robot::rightDown(LONG x, LONG y, bool absolute)
+inline UINT Robot::rightDown(LONG x, LONG y, bool absolute)
 {
     setCursorPos(x, y, absolute);
     return rightDown();
 }
 
-// UINT Robot::rightDown(POINT p, bool absolute)
-// {
-//     setCursorPos(p, absolute);
-//     return rightDown();
-// }
+inline UINT Robot::rightDown(POINT p, bool absolute)
+{
+    setCursorPos(p, absolute);
+    return rightDown();
+}
 
-UINT Robot::rightDown()
+inline UINT Robot::rightDown()
 {
     return mouse::RightDown();
 }
 
-UINT Robot::rightUp(LONG x, LONG y, bool absolute)
+inline UINT Robot::rightUp(LONG x, LONG y, bool absolute)
 {
     setCursorPos(x, y, absolute);
     return rightUp();
 }
 
-// UINT Robot::rightUp(POINT p, bool absolute)
-// {
-//     setCursorPos(p, absolute);
-//     return rightUp();
-// }
+inline UINT Robot::rightUp(POINT p, bool absolute)
+{
+    setCursorPos(p, absolute);
+    return rightUp();
+}
 
-UINT Robot::rightUp()
+inline UINT Robot::rightUp()
 {
     return mouse::RightUp();
 }
 
-UINT Robot::leftClick(LONG x, LONG y, DWORD milliseconds, bool absolute)
+inline UINT Robot::leftClick(LONG x, LONG y, DWORD milliseconds, bool absolute)
 {
     setCursorPos(x, y, absolute);
     return leftClick(milliseconds);
 }
 
-// UINT Robot::leftClick(POINT p, DWORD milliseconds, bool absolute)
-// {
-//     setCursorPos(p, absolute);
-//     return leftClick(milliseconds, absolute);
-// }
+inline UINT Robot::leftClick(POINT p, DWORD milliseconds, bool absolute)
+{
+    setCursorPos(p, absolute);
+    return leftClick(milliseconds, absolute);
+}
 
-UINT Robot::leftClick(DWORD milliseconds)
+inline UINT Robot::leftClick(DWORD milliseconds)
 {
     return mouse::LeftClick(milliseconds);
 }
 
-UINT Robot::rightClick(LONG x, LONG y, DWORD milliseconds, bool absolute)
+inline UINT Robot::rightClick(LONG x, LONG y, DWORD milliseconds, bool absolute)
 {
     setCursorPos(x, y, absolute);
     return rightClick(milliseconds);
 }
 
-// UINT Robot::rightClick(POINT p, DWORD milliseconds, bool absolute)
-// {
-//     setCursorPos(p, absolute);
-//     return rightClick(milliseconds);
-// }
+inline UINT Robot::rightClick(POINT p, DWORD milliseconds, bool absolute)
+{
+    setCursorPos(p, absolute);
+    return rightClick(milliseconds);
+}
 
-UINT Robot::rightClick(DWORD milliseconds)
+inline UINT Robot::rightClick(DWORD milliseconds)
 {
     return mouse::RightClick(milliseconds);
 }
 
-UINT Robot::leftDrag(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
+inline UINT Robot::leftDrag(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
 {
     POINTD tp;
     if(absolute){
@@ -281,12 +281,12 @@ UINT Robot::leftDrag(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, cons
     return mouse::LeftDrag(tp.x, tp.y, steps, type, params, milliseconds);
 }
 
-// UINT Robot::leftDrag(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
-// {
-//     return leftDrag(p.x, p.y, steps, type, params, milliseconds, absolute);
-// }
+inline UINT Robot::leftDrag(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
+{
+    return leftDrag(p.x, p.y, steps, type, params, milliseconds, absolute);
+}
 
-UINT Robot::rightDrag(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
+inline UINT Robot::rightDrag(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
 {
     POINTD tp;
     if(absolute){
@@ -298,12 +298,12 @@ UINT Robot::rightDrag(DOUBLE x, DOUBLE y, DWORD steps, mouse::MoveType type, con
     return mouse::RightDrag(tp.x, tp.y, steps, type, params, milliseconds);
 }
 
-// UINT Robot::rightDrag(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
-// {
-//     return rightDrag(p.x, p.y, steps, type, params, milliseconds, absolute);
-// }
+inline UINT Robot::rightDrag(POINT p, DWORD steps, mouse::MoveType type, const mouse::MoveParams* params, DWORD milliseconds, bool absolute)
+{
+    return rightDrag(p.x, p.y, steps, type, params, milliseconds, absolute);
+}
 
-RGBQUAD Robot::getPixel(LONG x, LONG y, BOOL absolute) const {
+inline RGBQUAD Robot::getPixel(LONG x, LONG y, BOOL absolute) const {
     POINT tp;
     if(absolute){
         tp.x = x;
@@ -314,7 +314,7 @@ RGBQUAD Robot::getPixel(LONG x, LONG y, BOOL absolute) const {
     return ScreenReader::getPixel(tp.x, tp.y);
 }
 
-BYTE Robot::getRed(LONG x, LONG y, BOOL absolute) const {
+inline BYTE Robot::getRed(LONG x, LONG y, BOOL absolute) const {
     POINT tp;
     if(absolute){
         tp.x = x;
@@ -325,7 +325,7 @@ BYTE Robot::getRed(LONG x, LONG y, BOOL absolute) const {
     return ScreenReader::getRed(tp.x, tp.y);
 }
 
-BYTE Robot::getGreen(LONG x, LONG y, BOOL absolute) const {
+inline BYTE Robot::getGreen(LONG x, LONG y, BOOL absolute) const {
     POINT tp;
     if(absolute){
         tp.x = x;
@@ -336,7 +336,7 @@ BYTE Robot::getGreen(LONG x, LONG y, BOOL absolute) const {
     return ScreenReader::getGreen(tp.x, tp.y);
 }
 
-BYTE Robot::getBlue(LONG x, LONG y, BOOL absolute) const {
+inline BYTE Robot::getBlue(LONG x, LONG y, BOOL absolute) const {
     POINT tp;
     if(absolute){
         tp.x = x;
@@ -347,7 +347,7 @@ BYTE Robot::getBlue(LONG x, LONG y, BOOL absolute) const {
     return ScreenReader::getBlue(tp.x, tp.y);
 }
 
-DOUBLE Robot::getPixelDiff(LONG x, LONG y, RGBQUAD color, BOOL absolute) const {
+inline DOUBLE Robot::getPixelDiff(LONG x, LONG y, RGBQUAD color, BOOL absolute) const {
     POINT tp;
     if(absolute){
         tp.x = x;
@@ -358,7 +358,7 @@ DOUBLE Robot::getPixelDiff(LONG x, LONG y, RGBQUAD color, BOOL absolute) const {
     return ScreenReader::getPixelDiff(tp.x, tp.y, color);
 }
 
-BOOL Robot::getPixelDiff(LONG x, LONG y, RGBQUAD color, DOUBLE tolerance, BOOL absolute) const {
+inline BOOL Robot::getPixelDiff(LONG x, LONG y, RGBQUAD color, DOUBLE tolerance, BOOL absolute) const {
     POINT tp;
     if(absolute){
         tp.x = x;
@@ -369,7 +369,7 @@ BOOL Robot::getPixelDiff(LONG x, LONG y, RGBQUAD color, DOUBLE tolerance, BOOL a
     return ScreenReader::getPixelDiff(tp.x, tp.y, color, tolerance);
 }
 
-UINT Robot::getPixelsDiff(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance, BOOL absolute) const {
+inline UINT Robot::getPixelsDiff(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance, BOOL absolute) const {
     POINT tp;
     if(absolute){
         tp.x = x;
@@ -380,7 +380,7 @@ UINT Robot::getPixelsDiff(LONG x, LONG y, LONG width, LONG height, RGBQUAD color
     return ScreenReader::getPixelsDiff(tp.x, tp.y, width, height, color, tolerance);
 }
 
-DOUBLE Robot::getPixelsDiffPercent(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance, BOOL absolute) const {
+inline DOUBLE Robot::getPixelsDiffPercent(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance, BOOL absolute) const {
     POINT tp;
     if(absolute){
         tp.x = x;

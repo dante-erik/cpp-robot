@@ -9,7 +9,7 @@
 // https://docs.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-sendinput
 // MS DOCS on how to use SendInput and also how to do Batch Inputs
 
-UINT InputEvent(DWORD type, DWORD flag)
+inline UINT InputEvent(DWORD type, DWORD flag)
 {
     INPUT Input = {0};
     Input.type = type;
@@ -17,7 +17,7 @@ UINT InputEvent(DWORD type, DWORD flag)
     return ::SendInput(1, &Input, sizeof(INPUT));
 }
 
-UINT InputEvent(DWORD type, WORD VK, DWORD flag)
+inline UINT InputEvent(DWORD type, WORD VK, DWORD flag)
 {
     INPUT Input = {0};
     Input.type = type;
@@ -26,7 +26,7 @@ UINT InputEvent(DWORD type, WORD VK, DWORD flag)
     return ::SendInput(1, &Input, sizeof(INPUT));
 }
 
-UINT InputEvent(DWORD type, WORD VK)
+inline UINT InputEvent(DWORD type, WORD VK)
 {
     INPUT Input = {0};
     Input.type = type;
@@ -54,13 +54,13 @@ namespace mouse
 
     // Private Members
     namespace helpers {
-        UINT MouseEvent(DWORD flag) { return InputEvent(INPUT_MOUSE, flag); }
+        inline UINT MouseEvent(DWORD flag) { return InputEvent(INPUT_MOUSE, flag); }
 
-        LONG roundl(DOUBLE value) {
+        inline LONG roundl(DOUBLE value) {
             return (LONG) value + ((LONG) value <= (LONG)(value - 0.5));
         }
 
-        BOOL MoveCursorLinear(DOUBLE x, DOUBLE y, DWORD steps, DWORD milliseconds) {
+        inline BOOL MoveCursorLinear(DOUBLE x, DOUBLE y, DWORD steps, DWORD milliseconds) {
             BOOL success = true;
             POINT cursor_pos;
             GetCursorPos(&cursor_pos);
@@ -72,7 +72,7 @@ namespace mouse
             return success;
         }
 
-        BOOL MoveCursorPolar(DOUBLE r, DOUBLE t, DWORD steps, DWORD milliseconds, PolarParams const& origin) {
+        inline BOOL MoveCursorPolar(DOUBLE r, DOUBLE t, DWORD steps, DWORD milliseconds, PolarParams const& origin) {
             t *= -1;
             BOOL success = true;
             POINT cursor_pos;
@@ -95,7 +95,7 @@ namespace mouse
         }
     }
 
-    BOOL MoveCursor(DOUBLE x, DOUBLE y, DWORD steps, MoveType type = MoveType::INSTANT, const MoveParams* params = NULL, DWORD milliseconds = 0)
+    inline BOOL MoveCursor(DOUBLE x, DOUBLE y, DWORD steps, MoveType type = MoveType::INSTANT, const MoveParams* params = NULL, DWORD milliseconds = 0)
     {
         if(steps == 0 || type == MoveType::INSTANT) {
             return SetCursorPos(helpers::roundl(x), helpers::roundl(y));
@@ -108,15 +108,15 @@ namespace mouse
         }
     }
 
-    UINT LeftDown() { return helpers::MouseEvent(MOUSEEVENTF_LEFTDOWN); }
+    inline UINT LeftDown() { return helpers::MouseEvent(MOUSEEVENTF_LEFTDOWN); }
 
-    UINT LeftUp() { return helpers::MouseEvent(MOUSEEVENTF_LEFTUP); }
+    inline UINT LeftUp() { return helpers::MouseEvent(MOUSEEVENTF_LEFTUP); }
 
-    UINT RightDown() { return helpers::MouseEvent(MOUSEEVENTF_RIGHTDOWN); }
+    inline UINT RightDown() { return helpers::MouseEvent(MOUSEEVENTF_RIGHTDOWN); }
 
-    UINT RightUp() { return helpers::MouseEvent(MOUSEEVENTF_RIGHTUP); }
+    inline UINT RightUp() { return helpers::MouseEvent(MOUSEEVENTF_RIGHTUP); }
 
-    UINT LeftClick(DWORD milliseconds = 0)
+    inline UINT LeftClick(DWORD milliseconds = 0)
     {
         UINT down = LeftDown();
         if (milliseconds != 0)
@@ -126,7 +126,7 @@ namespace mouse
         return down & LeftUp();
     }
 
-    UINT RightClick(DWORD milliseconds = 0)
+    inline UINT RightClick(DWORD milliseconds = 0)
     {
         UINT down = RightDown();
         if (milliseconds != 0)
@@ -136,14 +136,14 @@ namespace mouse
         return down & RightUp();
     }
 
-    UINT LeftDrag(DOUBLE x, DOUBLE y, DWORD steps, MoveType type, const MoveParams* params = NULL, DWORD milliseconds = 0)
+    inline UINT LeftDrag(DOUBLE x, DOUBLE y, DWORD steps, MoveType type, const MoveParams* params = NULL, DWORD milliseconds = 0)
     {
         UINT down = LeftDown();
         MoveCursor(x, y, steps, type, params, milliseconds);
         return down & LeftUp();
     }
 
-    UINT RightDrag(DOUBLE x, DOUBLE y, DWORD steps, MoveType type, const MoveParams* params = NULL, DWORD milliseconds = 0)
+    inline UINT RightDrag(DOUBLE x, DOUBLE y, DWORD steps, MoveType type, const MoveParams* params = NULL, DWORD milliseconds = 0)
     {
         UINT down = RightDown();
         MoveCursor(x, y, steps, type, params, milliseconds);
@@ -159,29 +159,29 @@ namespace keyboard
 {
     // Private Members
     namespace helpers {
-        UINT KeyboardEvent(WORD VK, DWORD flag) { return InputEvent(INPUT_KEYBOARD, VK, flag); }
+        inline UINT KeyboardEvent(WORD VK, DWORD flag) { return InputEvent(INPUT_KEYBOARD, VK, flag); }
 
-        UINT KeyboardEvent(WORD VK) { return InputEvent(INPUT_KEYBOARD, VK); }
+        inline UINT KeyboardEvent(WORD VK) { return InputEvent(INPUT_KEYBOARD, VK); }
 
-        LONG roundl(DOUBLE value) {
+        inline LONG roundl(DOUBLE value) {
             return (LONG) value + ((LONG) value <= (LONG)(value - 0.5));
         }
     }
 
-    UINT KeyDown(WORD VK) {
+    inline UINT KeyDown(WORD VK) {
         return helpers::KeyboardEvent(VK);
     }
 
-    UINT KeyUp(WORD VK) {
+    inline UINT KeyUp(WORD VK) {
         return helpers::KeyboardEvent(VK, KEYEVENTF_KEYUP);
     }
 
-    UINT KeyDown(char key) {
+    inline UINT KeyDown(char key) {
         key = (char)toupper(key);
         return KeyDown((WORD)key);
     }
 
-    UINT KeyUp(char key) {
+    inline UINT KeyUp(char key) {
         key = (char)toupper(key);
         return KeyUp((WORD)key);
     }
@@ -208,7 +208,7 @@ namespace keyboard
     //     return up;
     // }
 
-    UINT KeyDown(const char* keys, DWORD milliseconds = 0) {
+    inline UINT KeyDown(const char* keys, DWORD milliseconds = 0) {
         UINT down = KeyDown(keys[0]);
         for(UINT i = 1; keys[i]; ++i) {
             if(milliseconds) { Sleep(milliseconds); }
@@ -217,7 +217,7 @@ namespace keyboard
         return down;
     }
 
-    UINT KeyUp(const char* keys, DWORD milliseconds = 0) {
+    inline UINT KeyUp(const char* keys, DWORD milliseconds = 0) {
         UINT up = KeyUp(keys[0]);
         for(UINT i = 1; keys[i]; ++i) {
             if(milliseconds) { Sleep(milliseconds); }
@@ -226,7 +226,7 @@ namespace keyboard
         return up;
     }
 
-    UINT KeyType(char key, DWORD milliseconds = 0) {
+    inline UINT KeyType(char key, DWORD milliseconds = 0) {
         UINT down = KeyDown(key);
         if(milliseconds) { Sleep(milliseconds); }
         return down & KeyUp(key);
@@ -245,7 +245,7 @@ namespace keyboard
     //     return typed;
     // }
 
-    UINT KeyType(const char* word, DWORD milliseconds = 0) {
+    inline UINT KeyType(const char* word, DWORD milliseconds = 0) {
         UINT typed = KeyType(word[0], milliseconds);
         for(UINT i = 1; word[i]; ++i) {
             if(milliseconds) { Sleep(milliseconds); }

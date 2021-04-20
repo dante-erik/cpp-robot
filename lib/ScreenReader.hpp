@@ -54,7 +54,7 @@ public:
     [[nodiscard]] virtual DOUBLE getPixelsDiffPercent(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance) const;
 };
 
-LONG ScreenReader::coordToIndex(LONG x, LONG y) const
+inline LONG ScreenReader::coordToIndex(LONG x, LONG y) const
 {
     if (x < 0)
     {
@@ -75,7 +75,7 @@ LONG ScreenReader::coordToIndex(LONG x, LONG y) const
     return (getHeight() - y - 1) * getWidth() + x;
 }
 
-void ScreenReader::setup()
+inline void ScreenReader::setup()
 {
     GetWindowRect(window, &rect);
     LONG width = getWidth(), height = getHeight();
@@ -97,7 +97,7 @@ void ScreenReader::setup()
     pixels = new RGBQUAD[getNumPixels()];
 }
 
-void ScreenReader::destroy()
+inline void ScreenReader::destroy()
 {
     delete[] pixels;
     if (window)
@@ -108,7 +108,7 @@ void ScreenReader::destroy()
     }
 }
 
-ScreenReader::ScreenReader() : windowClass(nullptr), windowDesc(nullptr)
+inline ScreenReader::ScreenReader() : windowClass(nullptr), windowDesc(nullptr)
 {
     window = GetDesktopWindow();
     if (window)
@@ -118,7 +118,7 @@ ScreenReader::ScreenReader() : windowClass(nullptr), windowDesc(nullptr)
     }
 }
 
-ScreenReader::ScreenReader(const char *windowClass, const char *windowDesc) : windowClass(windowClass), windowDesc(windowDesc)
+inline ScreenReader::ScreenReader(const char *windowClass, const char *windowDesc) : windowClass(windowClass), windowDesc(windowDesc)
 {
     window = FindWindow(windowClass, windowDesc);
     if (window)
@@ -128,9 +128,9 @@ ScreenReader::ScreenReader(const char *windowClass, const char *windowDesc) : wi
     }
 }
 
-ScreenReader::~ScreenReader() { destroy(); }
+inline ScreenReader::~ScreenReader() { destroy(); }
 
-int ScreenReader::updatePixels()
+inline int ScreenReader::updatePixels()
 {
     return GetDIBits(
         captureDC,
@@ -142,95 +142,95 @@ int ScreenReader::updatePixels()
         DIB_RGB_COLORS);
 }
 
-RGBQUAD ScreenReader::getPixel(LONG x, LONG y) const
+inline RGBQUAD ScreenReader::getPixel(LONG x, LONG y) const
 {
     return pixels[coordToIndex(x, y)];
 }
 
-BYTE ScreenReader::getRed(LONG x, LONG y) const
+inline BYTE ScreenReader::getRed(LONG x, LONG y) const
 {
     return getPixel(x, y).rgbRed;
 }
 
-BYTE ScreenReader::getGreen(LONG x, LONG y) const
+inline BYTE ScreenReader::getGreen(LONG x, LONG y) const
 {
     return getPixel(x, y).rgbGreen;
 }
 
-BYTE ScreenReader::getBlue(LONG x, LONG y) const
+inline BYTE ScreenReader::getBlue(LONG x, LONG y) const
 {
     return getPixel(x, y).rgbBlue;
 }
 
-LONG ScreenReader::getNumPixels() const
+inline LONG ScreenReader::getNumPixels() const
 {
     return getWidth() * getHeight();
 }
 
-LONG ScreenReader::getWidth() const
+inline LONG ScreenReader::getWidth() const
 {
     return rect.right - rect.left;
 }
 
-LONG ScreenReader::getHeight() const
+inline LONG ScreenReader::getHeight() const
 {
     return rect.bottom - rect.top;
 }
 
-const char *const &ScreenReader::getWindowClass() const
+inline const char *const &ScreenReader::getWindowClass() const
 {
     return windowClass;
 }
 
-const char *const &ScreenReader::getWindowDesc() const
+inline const char *const &ScreenReader::getWindowDesc() const
 {
     return windowDesc;
 }
 
-HWND const &ScreenReader::getWindow() const
+inline HWND const &ScreenReader::getWindow() const
 {
     return window;
 }
 
-HDC const &ScreenReader::getWindowDC() const
+inline HDC const &ScreenReader::getWindowDC() const
 {
     return windowDC;
 }
 
-HDC const &ScreenReader::getCaptureDC() const
+inline HDC const &ScreenReader::getCaptureDC() const
 {
     return captureDC;
 }
 
-HBITMAP const &ScreenReader::getCaptureBitmap() const
+inline HBITMAP const &ScreenReader::getCaptureBitmap() const
 {
     return captureBitmap;
 }
 
-BITMAPINFO const &ScreenReader::getBitmapInfo() const
+inline BITMAPINFO const &ScreenReader::getBitmapInfo() const
 {
     return bmi;
 }
 
-RECT const &ScreenReader::getRect() const
+inline RECT const &ScreenReader::getRect() const
 {
     return rect;
 }
 
-RGBQUAD *const &ScreenReader::getPixels() const
+inline RGBQUAD *const &ScreenReader::getPixels() const
 {
     return pixels;
 }
 
-DOUBLE ScreenReader::getPixelDiff(LONG x, LONG y, RGBQUAD color) const {
+inline DOUBLE ScreenReader::getPixelDiff(LONG x, LONG y, RGBQUAD color) const {
     return color::diff(getPixel(x, y), color);
 }
 
-BOOL ScreenReader::getPixelDiff(LONG x, LONG y, RGBQUAD color, DOUBLE tolerance) const {
+inline BOOL ScreenReader::getPixelDiff(LONG x, LONG y, RGBQUAD color, DOUBLE tolerance) const {
     return color::diffLE(getPixel(x, y), color, tolerance);
 }
 
-UINT ScreenReader::getPixelsDiff(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance) const {
+inline UINT ScreenReader::getPixelsDiff(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance) const {
     const LONG w = getWidth(), h = getHeight();
     UINT count = 0;
     for(LONG i = (x < 0 ? 0 : x); i < x + width && i < w; ++i) {
@@ -241,7 +241,7 @@ UINT ScreenReader::getPixelsDiff(LONG x, LONG y, LONG width, LONG height, RGBQUA
     return count;
 }
 
-DOUBLE ScreenReader::getPixelsDiffPercent(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance) const {
+inline DOUBLE ScreenReader::getPixelsDiffPercent(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance) const {
     const LONG w = getWidth(), h = getHeight();
     LONG trueX = 0 < x ? x : 0;
     LONG trueY = 0 < y ? x : 0;
