@@ -2,13 +2,16 @@
 #pragma once
 
 // Includes
-#include "Color.hpp"
+#include <codecvt>
+#include <locale>
+#include <string>
 #include <Windows.h>
+#include "Color.hpp"
 
 class ScreenReader
 {
 protected:
-    const char *windowClass, *windowDesc;
+    std::string windowClass, windowDesc;
     HWND window = NULL;
     HDC windowDC = NULL;
     HDC captureDC = NULL;
@@ -24,7 +27,7 @@ protected:
 
 public:
     ScreenReader();                                                // Entire Screen
-    ScreenReader(const char *windowClass, const char *windowDesc); // Specific Window
+    ScreenReader(std::string const& windowClass, std::string const& windowDesc); // Specific Window
     ~ScreenReader();
     int updatePixels();
 
@@ -38,8 +41,8 @@ public:
     [[nodiscard]] LONG getHeight() const;
 
     // Useless Getters
-    [[nodiscard]] const char *const &getWindowClass() const;
-    [[nodiscard]] const char *const &getWindowDesc() const;
+    [[nodiscard]] std::string const &getWindowClass() const;
+    [[nodiscard]] std::string const &getWindowDesc() const;
     [[nodiscard]] HWND const &getWindow() const;
     [[nodiscard]] HDC const &getWindowDC() const;
     [[nodiscard]] HDC const &getCaptureDC() const;
@@ -108,7 +111,7 @@ inline void ScreenReader::destroy()
     }
 }
 
-inline ScreenReader::ScreenReader() : windowClass(nullptr), windowDesc(nullptr)
+inline ScreenReader::ScreenReader() : windowClass(""), windowDesc(""), bmi(), rect()
 {
     window = GetDesktopWindow();
     if (window)
@@ -118,9 +121,30 @@ inline ScreenReader::ScreenReader() : windowClass(nullptr), windowDesc(nullptr)
     }
 }
 
-inline ScreenReader::ScreenReader(const char *windowClass, const char *windowDesc) : windowClass(windowClass), windowDesc(windowDesc)
+inline std::wstring safeWstringConvert(std::string const& string) {
+    std::wstring converted;
+    int convertResult = MultiByteToWideChar(CP_UTF8, 0, string.c_str(), static_cast<int>(string.size()), NULL, 0);
+    if (convertResult <= 0)
+    {
+        converted = L"Failure to convert its message text using MultiByteToWideChar: convertResult=";
+        converted += std::to_wstring(convertResult);
+    }
+    else
+    {
+        converted.resize(static_cast<size_t>(convertResult) + 10);
+        convertResult = MultiByteToWideChar(CP_UTF8, 0, string.c_str(), static_cast<int>(string.size()), &converted[0], static_cast<int>(converted.size()));
+        if (convertResult <= 0)
+        {
+            converted = L"Failure to convert its message text using MultiByteToWideChar: convertResult=";
+            converted += std::to_wstring(convertResult);
+        }
+    }
+    return converted;
+}
+
+inline ScreenReader::ScreenReader(std::string const& windowClass, std::string const& windowDesc) : windowClass(windowClass), windowDesc(windowDesc), bmi(), rect()
 {
-    window = FindWindow(windowClass, windowDesc);
+    window = FindWindowW(static_cast<LPCWSTR>(safeWstringConvert(windowClass).c_str()), static_cast<LPCWSTR>(safeWstringConvert(windowDesc).c_str()));
     if (window)
     {
         setup();
@@ -177,12 +201,12 @@ inline LONG ScreenReader::getHeight() const
     return rect.bottom - rect.top;
 }
 
-inline const char *const &ScreenReader::getWindowClass() const
+inline std::string const &ScreenReader::getWindowClass() const
 {
     return windowClass;
 }
 
-inline const char *const &ScreenReader::getWindowDesc() const
+inline std::string const &ScreenReader::getWindowDesc() const
 {
     return windowDesc;
 }
@@ -247,6 +271,6 @@ inline DOUBLE ScreenReader::getPixelsDiffPercent(LONG x, LONG y, LONG width, LON
     LONG trueY = 0 < y ? x : 0;
     LONG trueW = trueX + width <= w ? width : w - trueX;
     LONG trueH = trueY + height <= h ? height : h - trueY;
-    DOUBLE area = trueW * trueH;
+    DOUBLE area = static_cast<DOUBLE>(static_cast<LONG64>(trueW) * static_cast<LONG64>(trueH));
     return getPixelsDiff(x, y, width, height, color, tolerance) / area;
 }

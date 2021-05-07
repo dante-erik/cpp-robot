@@ -1,5 +1,7 @@
 #pragma once
 
+#include <string>
+
 #include "EventWriter.hpp"
 #include "ScreenReader.hpp"
 
@@ -17,7 +19,7 @@ class Robot : public ScreenReader
 
 public:
     Robot();
-    Robot(const char *windowClass, const char *windowDesc);
+    Robot(std::string const& windowClass, std::string const& windowDesc);
     ~Robot();
     void focusApplication();
     // Writer
@@ -116,7 +118,7 @@ inline Robot::Robot() : ScreenReader()
     }
 }
 
-inline Robot::Robot(const char *windowClass, const char *windowDesc) : ScreenReader(windowClass, windowDesc)
+inline Robot::Robot(std::string const& windowClass, std::string const& windowDesc) : ScreenReader(windowClass, windowDesc)
 {
     if (getWindow())
     {
