@@ -1,7 +1,7 @@
 #include <cmath>
 #include <iostream>
 #include <vector>
-#include "Robot.hpp"
+#include "../lib/Robot.hpp"
 
 using std::cout, std::endl;
 using std::vector;

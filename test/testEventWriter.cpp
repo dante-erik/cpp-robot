@@ -1,6 +1,6 @@
 #include <cmath>
 #include <iostream>
-#include "EventWriter.hpp"
+#include "../lib/EventWriter.hpp"
 
 const double pi = std::acos(-1);
 

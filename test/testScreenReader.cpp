@@ -1,6 +1,6 @@
 #include <fstream>
 #include <iostream>
-#include "ScreenReader.hpp"
+#include "../lib/ScreenReader.hpp"
 
 #define forever for(;;)
 #define and &&

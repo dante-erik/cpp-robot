@@ -1,5 +1,5 @@
 #include <iostream>
-#include "Color.hpp"
+#include "../lib/Color.hpp"
 
 using std::cout, std::endl;
 
