@@ -100,7 +100,8 @@ int ScreenReader::updatePixels()
 
 RGBQUAD ScreenReader::getPixel(LONG x, LONG y) const
 {
-    return m_Pixels[coordToIndex(x, y)];
+    LONG index = coordToIndex(x, y);
+    return m_Pixels[clamp<LONG>(index, 0, getWidth() * getHeight() - 1)];
 }
 
 BYTE ScreenReader::getRed(LONG x, LONG y) const
