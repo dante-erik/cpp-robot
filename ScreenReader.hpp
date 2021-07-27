@@ -1,7 +1,8 @@
 #pragma once
 
-#include <string>
 #include <Windows.h>
+#include <string>
+
 
 class ScreenReader
 {
