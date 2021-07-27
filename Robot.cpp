@@ -196,7 +196,7 @@ UINT Robot::leftClick(POINT p, DWORD milliseconds)
 
 UINT Robot::leftClick(DWORD milliseconds)
 {
-    return EventWriter::Mouse::LeftClick(milliseconds);
+    return EventWriter::Mouse::leftClick(milliseconds);
 }
 
 UINT Robot::rightClick(LONG x, LONG y, DWORD milliseconds)

@@ -86,6 +86,8 @@ ScreenReader::~ScreenReader() { destroy(); }
 
 int ScreenReader::updatePixels()
 {
+    BitBlt(m_CaptureDC, 0, 0, getWidth(), getHeight(), m_WindowDC, 0, 0, SRCCOPY | CAPTUREBLT);
+
     return GetDIBits(
         m_CaptureDC,
         m_CaptureBitmap,

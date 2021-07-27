@@ -36,7 +36,7 @@ namespace EventWriter {
 
         UINT RightUp();
 
-        UINT LeftClick(DWORD milliseconds = 0);
+        UINT leftClick(DWORD milliseconds = 0);
 
         UINT RightClick(DWORD milliseconds = 0);
 
@@ -51,9 +51,9 @@ namespace EventWriter {
 
     namespace Keyboard
     {
-        UINT KeyDown(WORD VK);
+        UINT KeyDownVK(WORD VK);
 
-        UINT KeyUp(WORD VK);
+        UINT KeyUpVK(WORD VK);
 
         UINT KeyDown(char key);
 
@@ -62,6 +62,8 @@ namespace EventWriter {
         UINT KeyDown(const char* keys, DWORD milliseconds = 0);
 
         UINT KeyUp(const char* keys, DWORD milliseconds = 0);
+
+        UINT KeyTypeVK(WORD VK, DWORD milliseconds = 0);
 
         UINT KeyType(char key, DWORD milliseconds = 0);
 
