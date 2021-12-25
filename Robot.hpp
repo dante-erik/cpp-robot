@@ -2,8 +2,9 @@
 
 #include <Windows.h>
 
+#include <string>
+
 #include "Pixel.hpp"
-#include "framework.h"
 
 class Robot
 {
@@ -238,10 +239,6 @@ public:
      */
     [[nodiscard]] BYTE getBlue(const POINT& p) const;
 
-    [[nodiscard]] BYTE abs_diff(BYTE x, BYTE y) {
-        return x < y ? y - x : x - y;
-    }
-
     /**
      * @brief Compares the Euclidean Color Distance between the provided Pixel and the Screen Buffer
      * 
@@ -249,9 +246,7 @@ public:
      * @param tolerance Value at which (or below) the difference is negligible
      * @return BOOL true - close enough; false - different
      */
-    [[nodiscard]] BOOL isPixelSimilar(const Pixel& pix, unsigned short tolerance = 0.1) const {
-        return (abs_diff(getRed(pix.p), pix.r) + abs_diff(getGreen(pix.p), pix.g) + abs_diff(getBlue(pix.p), pix.b)) < 3 * tolerance;
-    }
+    [[nodiscard]] BOOL isPixelSimilar(const Pixel& pix, unsigned short tolerance = 0.1) const;
 
     /**
      * @brief Determines if the provided Pixel matches the Screen Buffer
@@ -259,7 +254,5 @@ public:
      * @param pix Pixel to compare to the screen buffer
      * @return BOOL true - equivalent; false - not equivalent
      */
-    [[nodiscard]] BOOL getPixelEquiv(const Pixel& pix) {
-        return getRed(pix.p) == pix.r && getGreen(pix.p) == pix.g && getBlue(pix.p), pix.b;
-    }
+    [[nodiscard]] BOOL getPixelEquiv(const Pixel& pix) const;
 };
