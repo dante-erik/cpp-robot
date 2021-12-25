@@ -1,68 +1,265 @@
 #pragma once
 
-#include "EventWriter.hpp"
-#include "ScreenReader.hpp"
+#include <Windows.h>
+
+#include "Pixel.hpp"
 #include "framework.h"
 
-class Robot : public ScreenReader
+class Robot
 {
-public:
-    enum PositionMode {
-        ABSOLUTE_POSITION,
-        RELATIVE_POSITION
-    };
-
 private:
-    PositionMode m_PositionMode;
+    std::string m_WindowClass, m_WindowDescription;
+    HWND m_WindowHandle = NULL;
+    HDC m_WindowDC = NULL;
+    HDC m_CaptureDC = NULL;
+    HBITMAP m_CaptureBitmap = NULL;
+    BITMAPINFO m_BitmapInfo;
+    RECT m_Rectangle;
+    RGBQUAD* m_Pixels = NULL;
 
-    POINTD translateLocation(DOUBLE x, DOUBLE y) const;
-    POINT translateLocation(LONG x, LONG y) const;
-    POINT translateLocation(POINT p) const;
+    LONG coordToIndex(LONG x, LONG y) const;
 
+    void setup();
+    void destroy();
 public:
-    Robot(PositionMode positionMode = RELATIVE_POSITION);
-    Robot(std::string const& windowClass, std::string const& windowDesc, PositionMode positionMode = RELATIVE_POSITION);
-    virtual ~Robot();
+    Robot();
+    Robot(std::string const& windowClass, std::string const& windowDesc);
+    ~Robot();
 
-    void focusApplication();
-    PositionMode positionMode() const;
-    void positionMode(PositionMode positionMode) const;
+    // Mouse
+    /**
+     * @brief Set the Cursor to a Position
+     * 
+     * @param p position of the cursor after set
+     * @return BOOL success or failure
+     */
+    BOOL setCursorPos(const POINT& p);
+    
+    /**
+     * @brief Moves and Presses the Left Mouse Button
+     * 
+     * @param p position of the cursor for the press
+     * @return UINT error code
+     */
+    UINT leftDown(const POINT& p);
 
-    // Writer
-    BOOL moveCursor(DOUBLE x, DOUBLE y, DWORD steps, EventWriter::Mouse::MoveType type, const EventWriter::Mouse::MoveParams* params = NULL, DWORD milliseconds = 0);
-    BOOL moveCursor(POINT p, DWORD steps, EventWriter::Mouse::MoveType type, const EventWriter::Mouse::MoveParams* params = NULL, DWORD milliseconds = 0);
-    BOOL setCursorPos(LONG x, LONG y);
-    BOOL setCursorPos(POINT p);
-    UINT leftDown(LONG x, LONG y);
-    UINT leftDown(POINT p);
+    /**
+     * @brief Presses the Left Mouse Button
+     * 
+     * @return UINT error code
+     */
     UINT leftDown();
-    UINT leftUp(LONG x, LONG y);
-    UINT leftUp(POINT p);
+
+    /**
+     * @brief Moves and Releases the Left Mouse Button
+     * 
+     * @param p position of the cursor for the release
+     * @return UINT error code
+     */
+    UINT leftUp(const POINT& p);
+
+    /**
+     * @brief Releases the Left Mouse Button
+     * 
+     * @return UINT error code
+     */
     UINT leftUp();
-    UINT rightDown(LONG x, LONG y);
-    UINT rightDown(POINT p);
+
+    /**
+     * @brief Moves and Presses the Right Mouse Button
+     * 
+     * @param p position of the cursor for the press
+     * @return UINT error code
+     */
+    UINT rightDown(const POINT& p);
+
+    /**
+     * @brief Presses the Right Mouse Button
+     * 
+     * @return UINT error code
+     */
     UINT rightDown();
-    UINT rightUp(LONG x, LONG y);
-    UINT rightUp(POINT p);
+
+    /**
+     * @brief Moves and Releases the Right Mouse Button
+     * 
+     * @param p position of the cursor for the release
+     * @return UINT error code
+     */
+    UINT rightUp(const POINT& p);
+
+    /**
+     * @brief Releases the Right Mouse Button
+     * 
+     * @return UINT error code
+     */
     UINT rightUp();
-    UINT leftClick(LONG x, LONG y, DWORD milliseconds = 0);
-    UINT leftClick(POINT p, DWORD milliseconds = 0);
-    UINT leftClick(DWORD milliseconds = 0);
-    UINT rightClick(LONG x, LONG y, DWORD milliseconds = 0);
-    UINT rightClick(POINT p, DWORD milliseconds = 0);
-    UINT rightClick(DWORD milliseconds = 0);
-    UINT leftDrag(DOUBLE x, DOUBLE y, DWORD steps, EventWriter::Mouse::MoveType type, const EventWriter::Mouse::MoveParams* params = NULL, DWORD milliseconds = 0);
-    UINT leftDrag(POINT p, DWORD steps, EventWriter::Mouse::MoveType type, const EventWriter::Mouse::MoveParams* params = NULL, DWORD milliseconds = 0);
-    UINT rightDrag(DOUBLE x, DOUBLE y, DWORD steps, EventWriter::Mouse::MoveType type, const EventWriter::Mouse::MoveParams* params = NULL, DWORD milliseconds = 0);
-    UINT rightDrag(POINT p, DWORD steps, EventWriter::Mouse::MoveType type, const EventWriter::Mouse::MoveParams* params = NULL, DWORD milliseconds = 0);
+
+    /**
+     * @brief Moves and Clicks the Left Mouse Button
+     * 
+     * @param p position of the cursor for the click
+     * @param clickDuration milliseconds
+     * @return UINT error code
+     */
+    UINT leftClick(const POINT& p, DWORD clickDuration = 0);
+
+    /**
+     * @brief Clicks the Left Mouse Button
+     * 
+     * @param clickDuration milliseconds
+     * @return UINT error code
+     */
+    UINT leftClick(DWORD clickDuration = 0);
+
+    /**
+     * @brief Moves and Clicks the Right Mouse Button
+     * 
+     * @param p position of the cursor for the click
+     * @param clickDuration milliseconds
+     * @return UINT error code
+     */
+    UINT rightClick(const POINT& p, DWORD clickDuration = 0);
+
+    /**
+     * @brief Clicks the Left Mouse Button
+     * 
+     * @param clickDuration milliseconds
+     * @return UINT error code
+     */
+    UINT rightClick(DWORD clickDuration = 0);
+
+    // Keyboard
+    /**
+     * @brief Presses the provided key
+     * 
+     * @param keyStroke character representing the key to press
+     */
+    void keyDown(char keyStroke);
+
+    /**
+     * @brief Presses the provided keys with the duration between each keystroke
+     * 
+     * @param keyStrokes characters representing the keys to press
+     * @param durationBetweenKeyStrokes milliseconds between each keystroke
+     */
+    void keyDown(const char keyStrokes[], DWORD durationBetweenKeyStrokes = 0);
+
+    /**
+     * @brief Releases the provided key
+     * 
+     * @param keyStroke character representing the key to release
+     */
+    void keyUp(char keyStroke);
+    
+    /**
+     * @brief Releases the provided keys with the duration between each keystroke
+     * 
+     * @param keyStrokes characters representing the keys to release
+     * @param durationBetweenKeyStrokes milliseconds between each keystroke
+     */
+    void keyUp(const char keyStrokes[], DWORD durationBetweenKeyStrokes = 0);
+
+    /**
+     * @brief Clicks (types) the provided key with the duration between each press and release
+     * 
+     * @param keyStroke character representing the key to type
+     * @param clickDuration milliseconds between each action
+     */
+    void keyClick(char keyStroke, DWORD clickDuration = 0);
+    
+    /**
+     * @brief Clicks (types) the provided keys with the duration between each press and release (no additional duration between subsequent characters)
+     * 
+     * @param keyStrokes characters representing the keys to type
+     * @param durationBetweenKeyStrokes milliseconds between each action
+     */
+    void keyClick(const char keyStrokes[], DWORD clickDurationForEachKey = 0);
+
+    /**
+     * @brief Presses Left Control, then the provided keyStroke, waits clickDuration milliseconds, then releases the provided keyStroke, and finally releases Left Control
+     * 
+     * @param keyStroke character representing the key to type
+     * @param clickDuration milliseconds between each action
+     */
+    void ctrlPlusKeyClick(char keyStroke, DWORD clickDuration = 0);
+
+    /**
+     * @brief Presses Left Control, performs keyClick(keystrokes, clickDurationForEachKey), and finally releases Left Control
+     * 
+     * @param keyStrokes character representing the key to type
+     * @param clickDurationForEachKey milliseconds between each action
+     */
+    void ctrlPlusKeyClick(const char keyStrokes[], DWORD clickDurationForEachKey = 0);
+
+    /**
+     * @brief Clicks the Enter Key
+     * 
+     * @param clickDuration milliseconds
+     */
+    void enterKeyClick(DWORD clickDuration = 0);
+    
+    /**
+     * @brief Clicks the Escape Key
+     * 
+     * @param clickDuration milliseconds
+     */
+    void escapeKeyClick(DWORD clickDuration = 0);
+
 
     // Reader
-    [[nodiscard]] RGBQUAD getPixel(LONG x, LONG y) const;
-    [[nodiscard]] BYTE getRed(LONG x, LONG y) const;
-    [[nodiscard]] BYTE getGreen(LONG x, LONG y) const;
-    [[nodiscard]] BYTE getBlue(LONG x, LONG y) const;
-    [[nodiscard]] DOUBLE getPixelDiff(LONG x, LONG y, RGBQUAD color) const;
-    [[nodiscard]] BOOL getPixelDiff(LONG x, LONG y, RGBQUAD color, DOUBLE tolerance) const;
-    [[nodiscard]] UINT getPixelsDiff(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance) const;
-    [[nodiscard]] DOUBLE getPixelsDiffPercent(LONG x, LONG y, LONG width, LONG height, RGBQUAD color, DOUBLE tolerance) const;
+    /**
+     * @brief Updates the Screen Buffer
+     * 
+     */
+    void updateScreenBuffer();
+
+    /**
+     * @brief Get the Red value for the POINT
+     * 
+     * @param p Point in the screen
+     * @return BYTE red component of the point
+     */
+    [[nodiscard]] BYTE getRed(const POINT& p) const;
+
+    /**
+     * @brief Get the Green value for the POINT
+     * 
+     * @param p Point in the screen
+     * @return BYTE green component of the point
+     */
+    [[nodiscard]] BYTE getGreen(const POINT& p) const;
+
+    /**
+     * @brief Get the Blue value for the POINT
+     * 
+     * @param p Point in the screen
+     * @return BYTE blue component of the point
+     */
+    [[nodiscard]] BYTE getBlue(const POINT& p) const;
+
+    [[nodiscard]] BYTE abs_diff(BYTE x, BYTE y) {
+        return x < y ? y - x : x - y;
+    }
+
+    /**
+     * @brief Compares the Euclidean Color Distance between the provided Pixel and the Screen Buffer
+     * 
+     * @param pix Pixel to compare to the screen buffer
+     * @param tolerance Value at which (or below) the difference is negligible
+     * @return BOOL true - close enough; false - different
+     */
+    [[nodiscard]] BOOL isPixelSimilar(const Pixel& pix, unsigned short tolerance = 0.1) const {
+        return (abs_diff(getRed(pix.p), pix.r) + abs_diff(getGreen(pix.p), pix.g) + abs_diff(getBlue(pix.p), pix.b)) < 3 * tolerance;
+    }
+
+    /**
+     * @brief Determines if the provided Pixel matches the Screen Buffer
+     * 
+     * @param pix Pixel to compare to the screen buffer
+     * @return BOOL true - equivalent; false - not equivalent
+     */
+    [[nodiscard]] BOOL getPixelEquiv(const Pixel& pix) {
+        return getRed(pix.p) == pix.r && getGreen(pix.p) == pix.g && getBlue(pix.p), pix.b;
+    }
 };
